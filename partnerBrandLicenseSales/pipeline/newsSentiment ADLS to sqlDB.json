@@ -348,6 +348,9 @@
 				"type": "String"
 			}
 		},
+		"folder": {
+			"name": "filesToTable"
+		},
 		"annotations": [],
 		"lastPublishTime": "2024-11-05T21:16:03Z"
 	},
