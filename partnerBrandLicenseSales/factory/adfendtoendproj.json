@@ -1,0 +1,9 @@
+{
+	"name": "adfendtoendproj",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f46db9b8-b388-432d-a5e4-0156b2b01631",
+		"tenantId": "14ffe926-a7d3-4339-926b-400f0d6fe5a9"
+	}
+}

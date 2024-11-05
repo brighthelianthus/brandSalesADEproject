@@ -1,0 +1,189 @@
+{
+	"name": "brandCertification ADLS to sqlDB_copy",
+	"properties": {
+		"activities": [
+			{
+				"name": "brand cert latest version",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "brand",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "brand",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "certification_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "certification_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "certification_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "certification_name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "lastest_version",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "lastest_version",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "getfileCSVfromADLS",
+						"type": "DatasetReference",
+						"parameters": {
+							"directory": "brandCertificationLatestVersion",
+							"file": "certificationLatestVersion.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SQLDB_brandSales",
+						"type": "DatasetReference",
+						"parameters": {
+							"table": "certificationLatestVersion",
+							"schema": "dbo"
+						}
+					}
+				]
+			},
+			{
+				"name": "partnerCertificationPassDate",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "getfileCSVfromADLS",
+						"type": "DatasetReference",
+						"parameters": {
+							"directory": "partnerCertificationPassDate",
+							"file": "partnerCertificationPassDate.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SQLDB_brandSales",
+						"type": "DatasetReference",
+						"parameters": {
+							"table": "partnerCertificationPassDate",
+							"schema": "dbo"
+						}
+					}
+				]
+			}
+		],
+		"variables": {
+			"rootFolder": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-11-05T21:16:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

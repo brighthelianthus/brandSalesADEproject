@@ -1,0 +1,15 @@
+{
+	"name": "ADVWORKS_e2eproj",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "adventureworks-server-01.database.windows.net",
+			"database": "onlinedb-advworks",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SystemAssignedManagedIdentity"
+		}
+	}
+}
