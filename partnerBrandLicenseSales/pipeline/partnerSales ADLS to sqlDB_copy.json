@@ -96,6 +96,7 @@
 								},
 								"sink": {
 									"type": "AzureSqlSink",
+									"preCopyScript": "drop table [dbo].[partnerSales]",
 									"writeBehavior": "insert",
 									"sqlWriterUseTableLock": false,
 									"tableOption": "autoCreate",
@@ -104,6 +105,487 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "Certification_ID",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Certification_ID",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Partner_Company_ID",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Partner_Company_ID",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "IPE_ID",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "IPE_ID",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "ISE_ID",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "ISE_ID",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Partner_ID",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Partner_ID",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "UK_ID",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "UK_ID",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jan Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jan_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jan Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jan_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jan Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jan_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Feb Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Feb_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Feb Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Feb_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Feb Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Feb_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Mar Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mar_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Mar Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mar_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Mar Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mar_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Apr Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Apr_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Apr Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Apr_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Apr Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Apr_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "May Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "May_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "May Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "May_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "May Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "May_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jun Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jun_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jun Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jun_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jun Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jun_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jul Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jul_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jul Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jul_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jul Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jul_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Aug Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Aug_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Aug Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Aug_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Aug Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Aug_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Sep Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Sep_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Sep Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Sep_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Sep Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Sep_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Oct Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Oct_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Oct Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Oct_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Oct Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Oct_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Nov Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Nov_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Nov Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Nov_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Nov Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Nov_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Dec Standard",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Dec_Standard",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Dec Professional",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Dec_Professional",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Dec Premium",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Dec_Premium",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "year_name",
+												"type": "String"
+											},
+											"sink": {
+												"name": "year_name",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										}
+									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
