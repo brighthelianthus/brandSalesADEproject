@@ -1,0 +1,39 @@
+{
+	"name": "genericParquetadls_bronze_partnersales",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adls_proje2e",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"directory": {
+				"type": "string"
+			},
+			"file": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "adls_bronze_partnersales"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().directory",
+					"type": "Expression"
+				},
+				"fileSystem": "bronze-partnersales"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

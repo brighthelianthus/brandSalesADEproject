@@ -1,0 +1,172 @@
+{
+	"name": "copy-dbRaw2BronzeAdls",
+	"properties": {
+		"activities": [
+			{
+				"name": "all tables in brandSales db",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat('\n    select s.name SchemaName,\n        t.name TableName\n        from sys.tables t\n        join sys.schemas s\n        on s.schema_id = t.schema_id\n        where s.name = ''', pipeline().parameters.schemaname,'''\n        ')",
+							"type": "Expression"
+						},
+						"queryTimeout": "00:10:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "brandSales_raw",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": {
+								"value": "@pipeline().parameters.schemaname",
+								"type": "Expression"
+							},
+							"table": {
+								"value": "@pipeline().parameters.tablename",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach table",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "all tables in brandSales db",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('all tables in brandSales db').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If table name is highwatermarkdate",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().TableName,'highwatermarkdate')",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Copy table to parquet in adls",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureSqlSource",
+												"additionalColumns": [
+													{
+														"name": "last_copied",
+														"value": {
+															"value": "@utcnow()",
+															"type": "Expression"
+														}
+													}
+												],
+												"queryTimeout": "00:20:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "ParquetSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "ParquetWriteSettings"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "brandSales_raw",
+												"type": "DatasetReference",
+												"parameters": {
+													"schema": {
+														"value": "@item().SchemaName",
+														"type": "Expression"
+													},
+													"table": {
+														"value": "@item().TableName",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "genericParquetadls_bronze_partnersales",
+												"type": "DatasetReference",
+												"parameters": {
+													"directory": {
+														"value": "@item().SchemaName",
+														"type": "Expression"
+													},
+													"file": {
+														"value": "@item().TableName",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"schemaname": {
+				"type": "string",
+				"defaultValue": "sales"
+			},
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-11-15T08:18:23Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

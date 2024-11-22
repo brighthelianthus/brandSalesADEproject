@@ -1,0 +1,365 @@
+{
+	"name": "newsSentiment ingest",
+	"properties": {
+		"activities": [
+			{
+				"name": "newsSentiment folders",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "genericfolderCSVadls_brand_license_sales",
+						"type": "DatasetReference",
+						"parameters": {
+							"folder": "newsSentiment"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach year",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "newsSentiment folders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('newsSentiment folders').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy news sentiment",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"additionalColumns": [
+										{
+											"name": "year_name",
+											"value": {
+												"value": "@{item().name}",
+												"type": "Expression"
+											}
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"wildcardFolderPath": {
+											"value": "@{concat('newsSentiment/',item().name)}",
+											"type": "Expression"
+										},
+										"wildcardFileName": "sentiment*.csv",
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "upsert",
+									"upsertSettings": {
+										"useTempDB": true,
+										"keys": [
+											"Region",
+											"Country",
+											"State",
+											"Industry",
+											"year_name"
+										]
+									},
+									"sqlWriterUseTableLock": false,
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "Region",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Region",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Country",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Country",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "State",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "State",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Industry",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Industry",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jan",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jan",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Feb",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Feb",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Mar",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Mar",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Apr",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Apr",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "May",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "May",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jun",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jun",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Jul",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Jul",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Aug",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Aug",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Sep",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Sep",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Oct",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Oct",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Nov",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Nov",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "Dec",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "Dec",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										},
+										{
+											"source": {
+												"name": "year_name",
+												"type": "String"
+											},
+											"sink": {
+												"name": "year_name",
+												"type": "String",
+												"physicalType": "nvarchar"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "genericfolderCSVadls_brand_license_sales",
+									"type": "DatasetReference",
+									"parameters": {
+										"folder": "newsSentiment"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "brandSales_raw",
+									"type": "DatasetReference",
+									"parameters": {
+										"schema": {
+											"value": "@pipeline().parameters.schemaname",
+											"type": "Expression"
+										},
+										"table": "newssentiment"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"schemaname": {
+				"type": "string",
+				"defaultValue": "sales"
+			}
+		},
+		"folder": {
+			"name": "filestotable"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-11-07T01:40:29Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

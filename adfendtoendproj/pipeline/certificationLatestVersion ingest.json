@@ -1,0 +1,141 @@
+{
+	"name": "certificationLatestVersion ingest",
+	"properties": {
+		"activities": [
+			{
+				"name": "brandCertificationLatestVersion",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"brand",
+								"certification_id",
+								"lastest_version"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "brand",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "brand",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "certification_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "certification_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "certification_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "certification_name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "lastest_version",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "lastest_version",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "genericCSVadls_brand_license_sales",
+						"type": "DatasetReference",
+						"parameters": {
+							"directory": "brandCertificationLatestVersion",
+							"file": "certificationLatestVersion.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "brandSales_raw",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": {
+								"value": "@pipeline().parameters.schemaname",
+								"type": "Expression"
+							},
+							"table": "certificationLatestVersion"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"schemaname": {
+				"type": "string",
+				"defaultValue": "sales"
+			}
+		},
+		"folder": {
+			"name": "filestotable"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-11-07T01:40:29Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

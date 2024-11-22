@@ -1,0 +1,165 @@
+{
+	"name": "runNotebooks",
+	"properties": {
+		"activities": [
+			{
+				"name": "bronze_to_silver_certificationlatestversion",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_certificationlatestversion"
+				},
+				"linkedServiceName": {
+					"referenceName": "proje2e databricks LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "bronze_to_silver_certificationpassdatelatest",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "bronze_to_silver_certificationlatestversion",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_certificationpassdatelatest"
+				},
+				"linkedServiceName": {
+					"referenceName": "proje2e databricks LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "bronze_to_silver_newssentiment",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "bronze_to_silver_certificationpassdatelatest",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_newssentiment"
+				},
+				"linkedServiceName": {
+					"referenceName": "proje2e databricks LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "bronze_to_silver_partnerlicensesales",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "bronze_to_silver_newssentiment",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_partnerlicensesales"
+				},
+				"linkedServiceName": {
+					"referenceName": "proje2e databricks LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "silver_to_gold",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "bronze_to_silver_partnerlicensesales",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/silver_to_gold"
+				},
+				"linkedServiceName": {
+					"referenceName": "proje2e databricks LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "correlation_sentiment_sales",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "silver_to_gold",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/correlation_sentiment_sales"
+				},
+				"linkedServiceName": {
+					"referenceName": "proje2e databricks LS",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-11-22T11:41:01Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
