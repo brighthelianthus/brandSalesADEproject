@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "-- Create the user 'user1' with a password\nCREATE LOGIN user1 WITH PASSWORD = '2024mayuriSaikia!';\nGO\n\n-- Create the user in the current database (e.g., your database name)\nUSE dblicensesales;\nGO\n\nCREATE USER user1 FOR LOGIN user1;\nGO\n\n-- Grant read access to the user\nALTER ROLE db_datareader ADD MEMBER user1;\nGO\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "dblicensesales",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

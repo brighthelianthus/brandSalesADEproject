@@ -1,0 +1,30 @@
+{
+	"name": "Parquet1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapse-proje2e-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "sales/delta/",
+				"fileSystem": "gold-partnersales"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "brand",
+				"type": "UTF8"
+			},
+			{
+				"name": "brand_uk",
+				"type": "INT_64"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}
