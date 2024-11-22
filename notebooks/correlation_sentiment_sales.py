@@ -221,7 +221,7 @@ count_sales_sentiment_wise.display()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC We train the Logistic Regression model
+# MAGIC We train a Logistic Regression model and make high, low, moderate sales predictions
 
 # COMMAND ----------
 
@@ -230,7 +230,7 @@ lr_model = lr.fit(df_transformed)
 
 # COMMAND ----------
 
-# predictions = lr_model.transform(df_transformed)
+# predictions = lr_model.transform(new_df_features)
 # display(predictions.limit(100))
 
 # COMMAND ----------
