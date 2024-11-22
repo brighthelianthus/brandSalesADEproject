@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfproje2e"
+		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
+		"adls_proje2e_accountKey": {
+			"value": ""
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://proje2e-keyvault.vault.azure.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "partnerandcertification.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "brandSales"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "mayuri"
+		},
+		"adls_proje2e_properties_typeProperties_url": {
+			"value": "https://proje2e.dfs.core.windows.net/"
+		},
+		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
+			"value": "1107-044851-j9vr470h"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

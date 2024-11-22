@@ -1,0 +1,2425 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfproje2e"
+		},
+		"AzureSqlDatabase1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSqlDatabase1'"
+		},
+		"adls_proje2e_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'adls_proje2e'"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://proje2e-keyvault.vault.azure.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "partnerandcertification.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "brandSales"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "mayuri"
+		},
+		"adls_proje2e_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://proje2e.dfs.core.windows.net/"
+		},
+		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "1107-044851-j9vr470h"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/certificationLatestVersion ingest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "brandCertificationLatestVersion",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "upsert",
+								"upsertSettings": {
+									"useTempDB": true,
+									"keys": [
+										"brand",
+										"certification_id",
+										"lastest_version"
+									]
+								},
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "certification_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "certification_id",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "certification_name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "certification_name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "lastest_version",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "lastest_version",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "genericCSVadls_brand_license_sales",
+								"type": "DatasetReference",
+								"parameters": {
+									"directory": "brandCertificationLatestVersion",
+									"file": "certificationLatestVersion.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "brandSales_raw",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema": {
+										"value": "@pipeline().parameters.schemaname",
+										"type": "Expression"
+									},
+									"table": "certificationLatestVersion"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schemaname": {
+						"type": "string",
+						"defaultValue": "sales"
+					}
+				},
+				"folder": {
+					"name": "filestotable"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-11-07T01:40:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/genericCSVadls_brand_license_sales')]",
+				"[concat(variables('factoryId'), '/datasets/brandSales_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copy-dbRaw2BronzeAdls')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "all tables in brandSales db",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('\n    select s.name SchemaName,\n        t.name TableName\n        from sys.tables t\n        join sys.schemas s\n        on s.schema_id = t.schema_id\n        where s.name = ''', pipeline().parameters.schemaname,'''\n        ')",
+									"type": "Expression"
+								},
+								"queryTimeout": "00:10:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "brandSales_raw",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema": {
+										"value": "@pipeline().parameters.schemaname",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@pipeline().parameters.tablename",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach table",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "all tables in brandSales db",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('all tables in brandSales db').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "If table name is highwatermarkdate",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@equals(item().TableName,'highwatermarkdate')",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Copy table to parquet in adls",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "AzureSqlSource",
+														"additionalColumns": [
+															{
+																"name": "last_copied",
+																"value": {
+																	"value": "@utcnow()",
+																	"type": "Expression"
+																}
+															}
+														],
+														"queryTimeout": "00:20:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "ParquetSink",
+														"storeSettings": {
+															"type": "AzureBlobFSWriteSettings"
+														},
+														"formatSettings": {
+															"type": "ParquetWriteSettings"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "brandSales_raw",
+														"type": "DatasetReference",
+														"parameters": {
+															"schema": {
+																"value": "@item().SchemaName",
+																"type": "Expression"
+															},
+															"table": {
+																"value": "@item().TableName",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "genericParquetadls_bronze_partnersales",
+														"type": "DatasetReference",
+														"parameters": {
+															"directory": {
+																"value": "@item().SchemaName",
+																"type": "Expression"
+															},
+															"file": {
+																"value": "@item().TableName",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schemaname": {
+						"type": "string",
+						"defaultValue": "sales"
+					},
+					"tablename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-11-15T08:18:23Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/brandSales_raw')]",
+				"[concat(variables('factoryId'), '/datasets/genericParquetadls_bronze_partnersales')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingestion_all_pipeline run')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "newsSentiment ingest",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "newsSentiment ingest",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "certificationLatestVersion ingest",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "certificationLatestVersion ingest",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "partnerCertPassdate ingest",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "partnerCertPassdate",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "partnerlicensesales ingest",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "partnerlicensesales ingest",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "newsSentiment ingest",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "newsSentiment run",
+							"value": "SUCCESS"
+						}
+					},
+					{
+						"name": "Set variable2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "certificationLatestVersion ingest",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "certificationLatestVersion run",
+							"value": "SUCCESS"
+						}
+					},
+					{
+						"name": "Set variable3",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "partnerCertPassdate ingest",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "partnerCertPassDate run",
+							"value": "SUCCESS"
+						}
+					},
+					{
+						"name": "Set variable4",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "partnerlicensesales ingest",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "partnerLicenseSales run",
+							"value": "SUCCESS"
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Set variable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set variable2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set variable3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set variable4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@and(equals(variables('partnerCertPassDate run'),'SUCCESS'),\nand(equals(variables('newsSentiment run'),'SUCCESS'),\nand(equals(variables('partnerLicenseSales run'),'SUCCESS'),\nequals(variables('certificationLatestVersion run'),'SUCCESS'))))",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "copy-dbRaw2BronzeAdls",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "copy-dbRaw2BronzeAdls",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"newsSentiment run": {
+						"type": "String"
+					},
+					"certificationLatestVersion run": {
+						"type": "String"
+					},
+					"partnerCertPassDate run": {
+						"type": "String"
+					},
+					"partnerLicenseSales run": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-11-12T06:35:02Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/newsSentiment ingest')]",
+				"[concat(variables('factoryId'), '/pipelines/certificationLatestVersion ingest')]",
+				"[concat(variables('factoryId'), '/pipelines/partnerCertPassdate')]",
+				"[concat(variables('factoryId'), '/pipelines/partnerlicensesales ingest')]",
+				"[concat(variables('factoryId'), '/pipelines/copy-dbRaw2BronzeAdls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/newsSentiment ingest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "newsSentiment folders",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "genericfolderCSVadls_brand_license_sales",
+								"type": "DatasetReference",
+								"parameters": {
+									"folder": "newsSentiment"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach year",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "newsSentiment folders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('newsSentiment folders').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy news sentiment",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"additionalColumns": [
+												{
+													"name": "year_name",
+													"value": {
+														"value": "@{item().name}",
+														"type": "Expression"
+													}
+												}
+											],
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@{concat('newsSentiment/',item().name)}",
+													"type": "Expression"
+												},
+												"wildcardFileName": "sentiment*.csv",
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "upsert",
+											"upsertSettings": {
+												"useTempDB": true,
+												"keys": [
+													"Region",
+													"Country",
+													"State",
+													"Industry",
+													"year_name"
+												]
+											},
+											"sqlWriterUseTableLock": false,
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "Region",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Region",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Country",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Country",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "State",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "State",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Industry",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Industry",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jan",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jan",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Feb",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Feb",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Mar",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mar",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Apr",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Apr",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "May",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "May",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jun",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jun",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jul",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jul",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Aug",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Aug",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Sep",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Sep",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Oct",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Oct",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Nov",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Nov",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Dec",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Dec",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "year_name",
+														"type": "String"
+													},
+													"sink": {
+														"name": "year_name",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "genericfolderCSVadls_brand_license_sales",
+											"type": "DatasetReference",
+											"parameters": {
+												"folder": "newsSentiment"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "brandSales_raw",
+											"type": "DatasetReference",
+											"parameters": {
+												"schema": {
+													"value": "@pipeline().parameters.schemaname",
+													"type": "Expression"
+												},
+												"table": "newssentiment"
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schemaname": {
+						"type": "string",
+						"defaultValue": "sales"
+					}
+				},
+				"folder": {
+					"name": "filestotable"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-11-07T01:40:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/genericfolderCSVadls_brand_license_sales')]",
+				"[concat(variables('factoryId'), '/datasets/brandSales_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/partnerCertPassdate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "partnerCertificationPassDate",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "upsert",
+								"upsertSettings": {
+									"useTempDB": true,
+									"keys": [
+										"Certification_ID",
+										"Certification_Name",
+										"Partner_ID"
+									]
+								},
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Brand",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Certification_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Certification_ID",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Certification_Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Certification_Name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Partner_Company",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Partner_Company",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Partner_Company_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Partner_Company_ID",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "IPE_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "IPE_ID",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ISE_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ISE_ID",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Industry",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Industry",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "IPE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "IPE",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ISE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ISE",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Tgt_Job_Role",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Tgt_Job_Role",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Partner_First_Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Partner_First_Name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Partner_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Partner_ID",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Partner_Last_Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Partner_Last_Name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Multiple_Cert_Holder",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Multiple_Cert_Holder",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Country",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Country",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "State",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "State",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Pass_Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Pass_Date",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "genericCSVadls_brand_license_sales",
+								"type": "DatasetReference",
+								"parameters": {
+									"directory": "partnerCertificationPassDate",
+									"file": "partnerCertificationPassDate.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "brandSales_raw",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema": {
+										"value": "@pipeline().parameters.schemaname",
+										"type": "Expression"
+									},
+									"table": "partnerCertificationPassDate"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schemaname": {
+						"type": "string",
+						"defaultValue": "sales"
+					}
+				},
+				"folder": {
+					"name": "filestotable"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-11-15T08:42:14Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/genericCSVadls_brand_license_sales')]",
+				"[concat(variables('factoryId'), '/datasets/brandSales_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/partnerlicensesales ingest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "partnerLicenseSales folders",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "genericfolderCSVadls_brand_license_sales",
+								"type": "DatasetReference",
+								"parameters": {
+									"folder": "partnerLicenseSales"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach year_copy",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "partnerLicenseSales folders",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('partnerLicenseSales folders').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy partnersales",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"additionalColumns": [
+												{
+													"name": "year_name",
+													"value": {
+														"value": "@{item().name}",
+														"type": "Expression"
+													}
+												}
+											],
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@concat('partnerLicenseSales/',item().name)",
+													"type": "Expression"
+												},
+												"wildcardFileName": "sales*.csv",
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "upsert",
+											"upsertSettings": {
+												"useTempDB": true,
+												"keys": [
+													"UK_ID",
+													"year_name",
+													"Certification_Name"
+												]
+											},
+											"sqlWriterUseTableLock": false,
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"name": "Partner_ID",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Partner_ID",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Certification_ID",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Certification_ID",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Industry",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Industry",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Certification_Name",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Certification_Name",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "ISE_ID",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "ISE_ID",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "IPE_ID",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "IPE_ID",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Partner_Company_ID",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Partner_Company_ID",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "UK_ID",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "UK_ID",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jan Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jan_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jan Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jan_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jan Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jan_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Feb Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Feb_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Feb Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Feb_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Feb Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Feb_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Mar Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mar_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Mar Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mar_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Mar Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Mar_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Apr Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Apr_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Apr Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Apr_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Apr Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Apr_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "May Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "May_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "May Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "May_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "May Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "May_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jun Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jun_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jun Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jun_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jun Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jun_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jul Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jul_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jul Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jul_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Jul Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Jul_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Aug Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Aug_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Aug Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Aug_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Aug Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Aug_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Sep Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Sep_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Sep Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Sep_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Sep Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Sep_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Oct Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Oct_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Oct Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Oct_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Oct Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Oct_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Nov Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Nov_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Nov Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Nov_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Nov Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Nov_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Dec Standard",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Dec_Standard",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Dec Professional",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Dec_Professional",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "Dec Premium",
+														"type": "String",
+														"physicalType": "String"
+													},
+													"sink": {
+														"name": "Dec_Premium",
+														"physicalType": "nvarchar"
+													}
+												},
+												{
+													"source": {
+														"name": "year_name",
+														"type": "String"
+													},
+													"sink": {
+														"name": "year_name",
+														"type": "String",
+														"physicalType": "nvarchar"
+													}
+												}
+											],
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "genericfolderCSVadls_brand_license_sales",
+											"type": "DatasetReference",
+											"parameters": {
+												"folder": "partnerLicenseSales"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "brandSales_raw",
+											"type": "DatasetReference",
+											"parameters": {
+												"schema": {
+													"value": "@pipeline().parameters.schemaname",
+													"type": "Expression"
+												},
+												"table": "partnerlicensesales"
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"schemaname": {
+						"type": "string",
+						"defaultValue": "sales"
+					}
+				},
+				"folder": {
+					"name": "filestotable"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-11-21T16:54:22Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/genericfolderCSVadls_brand_license_sales')]",
+				"[concat(variables('factoryId'), '/datasets/brandSales_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/runNotebooks')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "bronze_to_silver_certificationlatestversion",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_certificationlatestversion"
+						},
+						"linkedServiceName": {
+							"referenceName": "proje2e databricks LS",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "bronze_to_silver_certificationpassdatelatest",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "bronze_to_silver_certificationlatestversion",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_certificationpassdatelatest"
+						},
+						"linkedServiceName": {
+							"referenceName": "proje2e databricks LS",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "bronze_to_silver_newssentiment",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "bronze_to_silver_certificationpassdatelatest",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_newssentiment"
+						},
+						"linkedServiceName": {
+							"referenceName": "proje2e databricks LS",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "bronze_to_silver_partnerlicensesales",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "bronze_to_silver_newssentiment",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_partnerlicensesales"
+						},
+						"linkedServiceName": {
+							"referenceName": "proje2e databricks LS",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "silver_to_gold",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "bronze_to_silver_partnerlicensesales",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/silver_to_gold"
+						},
+						"linkedServiceName": {
+							"referenceName": "proje2e databricks LS",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "correlation_sentiment_sales",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "silver_to_gold",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/correlation_sentiment_sales"
+						},
+						"linkedServiceName": {
+							"referenceName": "proje2e databricks LS",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-11-22T11:41:01Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/proje2e databricks LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/brandSales_raw')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema": {
+						"type": "string"
+					},
+					"table": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "SQL_DB"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().schema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().table",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/genericCSVadls_brand_license_sales')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_proje2e",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"directory": {
+						"type": "string"
+					},
+					"file": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "adls_brand_license_sales"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().directory",
+							"type": "Expression"
+						},
+						"fileSystem": "brand-license-sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "certification_id",
+						"type": "String"
+					},
+					{
+						"name": "certification_name",
+						"type": "String"
+					},
+					{
+						"name": "lastest_version",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_proje2e')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/genericParquetadls_bronze_partnersales')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_proje2e",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"directory": {
+						"type": "string"
+					},
+					"file": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "adls_bronze_partnersales"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().directory",
+							"type": "Expression"
+						},
+						"fileSystem": "bronze-partnersales"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_proje2e')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/genericfolderCSVadls_brand_license_sales')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_proje2e",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"folder": {
+						"type": "string",
+						"defaultValue": "2019"
+					}
+				},
+				"folder": {
+					"name": "adls_brand_license_sales"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().folder",
+							"type": "Expression"
+						},
+						"fileSystem": "brand-license-sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_proje2e')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('AzureSqlDatabase1_properties_typeProperties_server')]",
+					"database": "[parameters('AzureSqlDatabase1_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('AzureSqlDatabase1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzureSqlDatabase1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_proje2e')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('adls_proje2e_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('adls_proje2e_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/proje2e databricks LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-242149813669173.13.azuredatabricks.net",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "databricks-workspace-proje2e-accesstoken"
+					},
+					"existingClusterId": "[parameters('proje2e databricks LS_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+			]
+		}
+	]
+}
