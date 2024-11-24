@@ -156,8 +156,37 @@
 					"referenceName": "proje2e databricks LS",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "correlation_sentiment_sales",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "correlation_value",
+					"value": {
+						"value": "@activity('correlation_sentiment_sales').output.runOutput.correlation_value.name.value",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"correlation_value": {
+				"type": "String"
+			}
+		},
 		"annotations": [],
 		"lastPublishTime": "2024-11-22T11:41:01Z"
 	},
