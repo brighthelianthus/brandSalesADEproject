@@ -158,7 +158,7 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set variable correlation",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
