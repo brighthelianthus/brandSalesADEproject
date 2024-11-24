@@ -96,6 +96,7 @@ plt.title('Sales Distribution')
 plt.xlabel('Sales')
 plt.ylabel('Frequency')
 plt.grid(True)
+plt.savefig('/Workspace/Users/mayurisaikia001@outlook.com/brandSalesADEproject-notebooks/images/sales_distribution.png')
 
 
 # COMMAND ----------
@@ -258,3 +259,4 @@ plt.xlabel('Sentiment')
 plt.ylabel('Sales')
 plt.grid(True)
 plt.show()
+plt.savefig('/Workspace/Users/mayurisaikia001@outlook.com/brandSalesADEproject-notebooks/images/sales_sentiment_correlation.png')
