@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://stadtplan.bonn.de/geojson?Thema=18817",
+			"url": "https://stadtplan.bonn.de/geojson",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
