@@ -39,10 +39,6 @@
 			"type": "string",
 			"defaultValue": "https://proje2e.dfs.core.windows.net/"
 		},
-		"germanynoise_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://data.montgomerycountymd.gov"
-		},
 		"jsonplaceholder_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://jsonplaceholder.typicode.com/posts"
@@ -50,6 +46,18 @@
 		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "1107-044851-j9vr470h"
+		},
+		"catalogdatagovJSON_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://data.montgomerycountymd.gov/"
+		},
+		"dummyjson_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dummyjson.com"
+		},
+		"whenfilelands_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fe10ff5f-6c60-4346-a17a-49a8f8d71e82/resourceGroups/rg-proje2e/providers/Microsoft.Storage/storageAccounts/proje2e"
 		},
 		"containerUri": {
 			"type": "string",
@@ -102,11 +110,14 @@
 					"adls_proje2e_properties_typeProperties_url": {
 						"value": "[parameters('adls_proje2e_properties_typeProperties_url')]"
 					},
-					"germanynoise_properties_typeProperties_url": {
-						"value": "[parameters('germanynoise_properties_typeProperties_url')]"
-					},
 					"jsonplaceholder_properties_typeProperties_url": {
 						"value": "[parameters('jsonplaceholder_properties_typeProperties_url')]"
+					},
+					"catalogdatagovJSON_properties_typeProperties_url": {
+						"value": "[parameters('catalogdatagovJSON_properties_typeProperties_url')]"
+					},
+					"dummyjson_properties_typeProperties_url": {
+						"value": "[parameters('dummyjson_properties_typeProperties_url')]"
 					},
 					"proje2e databricks LS_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('proje2e databricks LS_properties_typeProperties_existingClusterId')]"
@@ -128,6 +139,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"whenfilelands_properties_typeProperties_scope": {
+						"value": "[parameters('whenfilelands_properties_typeProperties_scope')]"
 					}
 				}
 			},

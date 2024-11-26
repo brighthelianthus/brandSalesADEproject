@@ -6,6 +6,10 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "adfproje2e"
+		},
+		"whenfilelands_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fe10ff5f-6c60-4346-a17a-49a8f8d71e82/resourceGroups/rg-proje2e/providers/Microsoft.Storage/storageAccounts/proje2e"
 		}
 	},
 	"variables": {
@@ -13,14 +17,14 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/runNotebooks')]",
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "bronze_to_silver_certificationlatestversion",
-						"type": "DatabricksNotebook",
+						"name": "website traffic",
+						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -31,186 +35,62 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_certificationlatestversion"
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "input",
+									"wildcardFileName": "*traffic.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
 						},
-						"linkedServiceName": {
-							"referenceName": "proje2e databricks LS",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "bronze_to_silver_certificationpassdatelatest",
-						"type": "DatabricksNotebook",
-						"dependsOn": [
+						"inputs": [
 							{
-								"activity": "bronze_to_silver_certificationlatestversion",
-								"dependencyConditions": [
-									"Completed"
-								]
+								"referenceName": "blobstorageCSV",
+								"type": "DatasetReference",
+								"parameters": {}
 							}
 						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_certificationpassdatelatest"
-						},
-						"linkedServiceName": {
-							"referenceName": "proje2e databricks LS",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "bronze_to_silver_newssentiment",
-						"type": "DatabricksNotebook",
-						"dependsOn": [
+						"outputs": [
 							{
-								"activity": "bronze_to_silver_certificationpassdatelatest",
-								"dependencyConditions": [
-									"Completed"
-								]
+								"referenceName": "brandSales_raw",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema": "dbo",
+									"table": "websitetraffic"
+								}
 							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_newssentiment"
-						},
-						"linkedServiceName": {
-							"referenceName": "proje2e databricks LS",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "bronze_to_silver_partnerlicensesales",
-						"type": "DatabricksNotebook",
-						"dependsOn": [
-							{
-								"activity": "bronze_to_silver_newssentiment",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/bronze_to_silver_partnerlicensesales"
-						},
-						"linkedServiceName": {
-							"referenceName": "proje2e databricks LS",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "silver_to_gold",
-						"type": "DatabricksNotebook",
-						"dependsOn": [
-							{
-								"activity": "bronze_to_silver_partnerlicensesales",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/silver_to_gold"
-						},
-						"linkedServiceName": {
-							"referenceName": "proje2e databricks LS",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "correlation_sentiment_sales",
-						"type": "DatabricksNotebook",
-						"dependsOn": [
-							{
-								"activity": "silver_to_gold",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"notebookPath": "/Users/mayurisaikia001@outlook.com/notebooks/correlation_sentiment_sales"
-						},
-						"linkedServiceName": {
-							"referenceName": "proje2e databricks LS",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "Set variable correlation",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "correlation_sentiment_sales",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "correlation_value",
-							"value": {
-								"value": "@activity('correlation_sentiment_sales').output.runOutput.correlation_value.name.value",
-								"type": "Expression"
-							}
-						}
+						]
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"variables": {
-					"correlation_value": {
-						"type": "String"
-					}
-				},
 				"folder": {
 					"name": "brandlicensesales"
 				},
-				"annotations": [],
-				"lastPublishTime": "2024-11-22T11:41:01Z"
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -455,32 +335,35 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dailyrun_scheduled')]",
+			"name": "[concat(parameters('factoryName'), '/whenfilelands')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "jsonplaceholder_posts_to_blob_input",
+							"referenceName": "pipeline1",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
 					}
 				],
-				"type": "ScheduleTrigger",
+				"type": "BlobEventsTrigger",
 				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2024-11-26T15:08:00",
-						"timeZone": "India Standard Time"
-					}
+					"blobPathBeginsWith": "/global/blobs/input/",
+					"blobPathEndsWith": "website_traffic.csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('whenfilelands_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
+			]
 		}
 	]
 }

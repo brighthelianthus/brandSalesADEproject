@@ -39,10 +39,6 @@
 			"type": "string",
 			"defaultValue": "https://proje2e.dfs.core.windows.net/"
 		},
-		"germanynoise_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://data.montgomerycountymd.gov"
-		},
 		"jsonplaceholder_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://jsonplaceholder.typicode.com/posts"
@@ -50,6 +46,18 @@
 		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "1107-044851-j9vr470h"
+		},
+		"catalogdatagovJSON_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://data.montgomerycountymd.gov/"
+		},
+		"dummyjson_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dummyjson.com"
+		},
+		"whenfilelands_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/fe10ff5f-6c60-4346-a17a-49a8f8d71e82/resourceGroups/rg-proje2e/providers/Microsoft.Storage/storageAccounts/proje2e"
 		}
 	},
 	"variables": {
@@ -632,134 +640,6 @@
 				"[concat(variables('factoryId'), '/pipelines/partnerCertPassdate')]",
 				"[concat(variables('factoryId'), '/pipelines/partnerlicensesales ingest')]",
 				"[concat(variables('factoryId'), '/pipelines/copy-dbRaw2BronzeAdls')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/jsonplaceholder_posts_to_blob_input')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "restapitoinputcsv",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"supportRFC5988": "true"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".csv"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "josnplaceholder_posts",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "blobstorageCSV",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Adoptable pets data",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "restapitoinputcsv",
-								"dependencyConditions": [
-									"Completed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"supportRFC5988": "true"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".csv"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "RestResourceAdoptablePets",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "blobstorageCSV",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "TriggerBasedProject"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/josnplaceholder_posts')]",
-				"[concat(variables('factoryId'), '/datasets/blobstorageCSV')]",
-				"[concat(variables('factoryId'), '/datasets/RestResourceAdoptablePets')]"
 			]
 		},
 		{
@@ -2340,29 +2220,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RestResourceAdoptablePets')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "germanynoise",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "TriggerBasedProject"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": "/api/views/e54u-qx42/rows.csv?accessType=DOWNLOAD"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/germanynoise')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/blobstorageCSV')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2664,21 +2521,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/germanynoise')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('germanynoise_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/jsonplaceholder')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2718,33 +2560,145 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dailyrun_scheduled')]",
+			"name": "[concat(parameters('factoryName'), '/catalogdatagovJSON')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('catalogdatagovJSON_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dummyjson')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('dummyjson_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "website traffic",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "input",
+									"wildcardFileName": "*traffic.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "blobstorageCSV",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "brandSales_raw",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema": "dbo",
+									"table": "websitetraffic"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "brandlicensesales"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/blobstorageCSV')]",
+				"[concat(variables('factoryId'), '/datasets/brandSales_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/whenfilelands')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "jsonplaceholder_posts_to_blob_input",
+							"referenceName": "pipeline1",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
 					}
 				],
-				"type": "ScheduleTrigger",
+				"type": "BlobEventsTrigger",
 				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2024-11-26T15:08:00",
-						"timeZone": "India Standard Time"
-					}
+					"blobPathBeginsWith": "/global/blobs/input/",
+					"blobPathEndsWith": "website_traffic.csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('whenfilelands_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/jsonplaceholder_posts_to_blob_input')]"
+				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
 			]
 		}
 	]
