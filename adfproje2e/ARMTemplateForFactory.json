@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'adls_proje2e'"
 		},
+		"blobGlobal_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'blobGlobal'"
+		},
 		"AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://proje2e-keyvault.vault.azure.net/"
@@ -34,6 +38,10 @@
 		"adls_proje2e_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://proje2e.dfs.core.windows.net/"
+		},
+		"jsonplaceholder_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://jsonplaceholder.typicode.com/posts"
 		},
 		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
 			"type": "string",
@@ -183,7 +191,7 @@
 					}
 				},
 				"folder": {
-					"name": "filestotable"
+					"name": "brandlicensesales/filestotable"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-11-07T01:40:29Z"
@@ -364,6 +372,9 @@
 					"tablename": {
 						"type": "string"
 					}
+				},
+				"folder": {
+					"name": "brandlicensesales"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-11-15T08:18:23Z"
@@ -605,6 +616,9 @@
 						"type": "String"
 					}
 				},
+				"folder": {
+					"name": "brandlicensesales"
+				},
 				"annotations": [],
 				"lastPublishTime": "2024-11-12T06:35:02Z"
 			},
@@ -614,6 +628,76 @@
 				"[concat(variables('factoryId'), '/pipelines/partnerCertPassdate')]",
 				"[concat(variables('factoryId'), '/pipelines/partnerlicensesales ingest')]",
 				"[concat(variables('factoryId'), '/pipelines/copy-dbRaw2BronzeAdls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/jsonplaceholder_posts_to_blob_input')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "restapitoinputcsv",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "josnplaceholder_posts",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "blobstorageCSV",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "TriggerBasedProject"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/josnplaceholder_posts')]",
+				"[concat(variables('factoryId'), '/datasets/blobstorageCSV')]"
 			]
 		},
 		{
@@ -979,7 +1063,7 @@
 					}
 				},
 				"folder": {
-					"name": "filestotable"
+					"name": "brandlicensesales/filestotable"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-11-07T01:40:29Z"
@@ -1308,7 +1392,7 @@
 					}
 				},
 				"folder": {
-					"name": "filestotable"
+					"name": "brandlicensesales/filestotable"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-11-15T08:42:14Z"
@@ -1979,7 +2063,7 @@
 					}
 				},
 				"folder": {
-					"name": "filestotable"
+					"name": "brandlicensesales/filestotable"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-11-21T16:54:22Z"
@@ -2149,16 +2233,79 @@
 							"referenceName": "proje2e databricks LS",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Set variable correlation",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "correlation_sentiment_sales",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "correlation_value",
+							"value": {
+								"value": "@activity('correlation_sentiment_sales').output.runOutput.correlation_value.name.value",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"correlation_value": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "brandlicensesales"
 				},
 				"annotations": [],
 				"lastPublishTime": "2024-11-22T11:41:01Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/proje2e databricks LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/blobstorageCSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "blobGlobal",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "TriggerBasedProject"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "input",
+						"container": "global"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blobGlobal')]"
 			]
 		},
 		{
@@ -2179,7 +2326,7 @@
 					}
 				},
 				"folder": {
-					"name": "SQL_DB"
+					"name": "brandSalesProject/SQL_DB"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -2217,7 +2364,7 @@
 					}
 				},
 				"folder": {
-					"name": "adls_brand_license_sales"
+					"name": "brandSalesProject/adls_brand_license_sales"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -2280,7 +2427,7 @@
 					}
 				},
 				"folder": {
-					"name": "adls_bronze_partnersales"
+					"name": "brandSalesProject/adls_bronze_partnersales"
 				},
 				"annotations": [],
 				"type": "Parquet",
@@ -2321,7 +2468,7 @@
 					}
 				},
 				"folder": {
-					"name": "adls_brand_license_sales"
+					"name": "brandSalesProject/adls_brand_license_sales"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -2343,6 +2490,27 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/adls_proje2e')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/josnplaceholder_posts')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "jsonplaceholder",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "TriggerBasedProject"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/jsonplaceholder')]"
 			]
 		},
 		{
@@ -2398,6 +2566,34 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/blobGlobal')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('blobGlobal_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/jsonplaceholder')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('jsonplaceholder_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/proje2e databricks LS')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2419,6 +2615,44 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/restapi_scheduled')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "jsonplaceholder_posts_to_blob_input",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-11-26T08:45:00",
+						"timeZone": "India Standard Time",
+						"schedule": {
+							"minutes": [
+								45
+							],
+							"hours": [
+								8
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/jsonplaceholder_posts_to_blob_input')]"
 			]
 		}
 	]

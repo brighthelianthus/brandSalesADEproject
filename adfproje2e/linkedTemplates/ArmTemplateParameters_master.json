@@ -11,6 +11,9 @@
 		"adls_proje2e_accountKey": {
 			"value": ""
 		},
+		"blobGlobal_connectionString": {
+			"value": ""
+		},
 		"AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"value": "https://proje2e-keyvault.vault.azure.net/"
 		},
@@ -25,6 +28,9 @@
 		},
 		"adls_proje2e_properties_typeProperties_url": {
 			"value": "https://proje2e.dfs.core.windows.net/"
+		},
+		"jsonplaceholder_properties_typeProperties_url": {
+			"value": "https://jsonplaceholder.typicode.com/posts"
 		},
 		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
 			"value": "1107-044851-j9vr470h"
