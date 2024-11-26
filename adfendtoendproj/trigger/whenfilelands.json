@@ -13,7 +13,7 @@
 		],
 		"type": "BlobEventsTrigger",
 		"typeProperties": {
-			"blobPathBeginsWith": "/global/blobs/input/website_traffic",
+			"blobPathBeginsWith": "/global/blobs/load/website_traffic",
 			"blobPathEndsWith": ".csv",
 			"ignoreEmptyBlobs": true,
 			"scope": "/subscriptions/fe10ff5f-6c60-4346-a17a-49a8f8d71e82/resourceGroups/rg-proje2e/providers/Microsoft.Storage/storageAccounts/proje2e",
