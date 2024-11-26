@@ -1,0 +1,12 @@
+{
+	"name": "catalogdatagovJSON",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://data.montgomerycountymd.gov/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
