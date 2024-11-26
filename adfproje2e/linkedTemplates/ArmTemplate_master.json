@@ -39,6 +39,10 @@
 			"type": "string",
 			"defaultValue": "https://proje2e.dfs.core.windows.net/"
 		},
+		"germanynoise_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://data.montgomerycountymd.gov"
+		},
 		"jsonplaceholder_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://jsonplaceholder.typicode.com/posts"
@@ -97,6 +101,9 @@
 					},
 					"adls_proje2e_properties_typeProperties_url": {
 						"value": "[parameters('adls_proje2e_properties_typeProperties_url')]"
+					},
+					"germanynoise_properties_typeProperties_url": {
+						"value": "[parameters('germanynoise_properties_typeProperties_url')]"
 					},
 					"jsonplaceholder_properties_typeProperties_url": {
 						"value": "[parameters('jsonplaceholder_properties_typeProperties_url')]"

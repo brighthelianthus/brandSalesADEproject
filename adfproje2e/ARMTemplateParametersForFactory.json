@@ -29,6 +29,9 @@
 		"adls_proje2e_properties_typeProperties_url": {
 			"value": "https://proje2e.dfs.core.windows.net/"
 		},
+		"germanynoise_properties_typeProperties_url": {
+			"value": "https://data.montgomerycountymd.gov"
+		},
 		"jsonplaceholder_properties_typeProperties_url": {
 			"value": "https://jsonplaceholder.typicode.com/posts"
 		},
