@@ -33,16 +33,9 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2024-11-26T08:58:00",
+						"startTime": "2024-11-26T09:02:00",
 						"timeZone": "Azores Standard Time",
-						"schedule": {
-							"minutes": [
-								58
-							],
-							"hours": [
-								8
-							]
-						}
+						"schedule": {}
 					}
 				}
 			},
