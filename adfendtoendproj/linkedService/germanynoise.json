@@ -1,0 +1,12 @@
+{
+	"name": "germanynoise",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://stadtplan.bonn.de/geojson?Thema=18817",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
