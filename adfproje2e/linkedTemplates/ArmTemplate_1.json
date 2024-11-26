@@ -56,7 +56,14 @@
 							},
 							"sink": {
 								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
+								"writeBehavior": "upsert",
+								"upsertSettings": {
+									"useTempDB": true,
+									"keys": [
+										"Timestamp",
+										"filename"
+									]
+								},
 								"sqlWriterUseTableLock": false,
 								"disableMetricsCollection": false
 							},
@@ -547,7 +554,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -566,6 +573,37 @@
 					"events": [
 						"Microsoft.Storage.BlobCreated"
 					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/scheduledload')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline1",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-11-27T22:11:00",
+						"timeZone": "India Standard Time",
+						"schedule": {}
+					}
 				}
 			},
 			"dependsOn": [
