@@ -13,7 +13,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/restapi_scheduled')]",
+			"name": "[concat(parameters('factoryName'), '/dailyrun_scheduled')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -33,8 +33,8 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2024-11-26T09:02:00",
-						"timeZone": "Azores Standard Time",
+						"startTime": "2024-11-26T14:42:00",
+						"timeZone": "India Standard Time",
 						"schedule": {}
 					}
 				}
