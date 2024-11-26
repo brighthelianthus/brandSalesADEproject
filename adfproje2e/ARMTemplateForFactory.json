@@ -2046,7 +2046,7 @@
 									"type": "AzureBlobStorageReadSettings",
 									"recursive": true,
 									"wildcardFolderPath": "load",
-									"wildcardFileName": "*.csv",
+									"wildcardFileName": "website_traffic*.csv",
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -2055,13 +2055,7 @@
 							},
 							"sink": {
 								"type": "AzureSqlSink",
-								"writeBehavior": "upsert",
-								"upsertSettings": {
-									"useTempDB": true,
-									"keys": [
-										"Timestamp"
-									]
-								},
+								"writeBehavior": "insert",
 								"sqlWriterUseTableLock": false,
 								"disableMetricsCollection": false
 							},
