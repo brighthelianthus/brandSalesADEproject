@@ -1,0 +1,24 @@
+{
+	"name": "watermark",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "blobGlobal",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "watermark.csv",
+				"folderPath": "load",
+				"container": "global"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
