@@ -39,14 +39,6 @@
 			"type": "string",
 			"defaultValue": "https://proje2e.dfs.core.windows.net/"
 		},
-		"jsonplaceholder_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://jsonplaceholder.typicode.com/posts"
-		},
-		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
-			"type": "string",
-			"defaultValue": "1107-044851-j9vr470h"
-		},
 		"catalogdatagovJSON_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://data.montgomerycountymd.gov/"
@@ -54,6 +46,14 @@
 		"dummyjson_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dummyjson.com"
+		},
+		"jsonplaceholder_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://jsonplaceholder.typicode.com/posts"
+		},
+		"proje2e databricks LS_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "1107-044851-j9vr470h"
 		},
 		"whenfilelands_properties_typeProperties_scope": {
 			"type": "string",
@@ -110,14 +110,14 @@
 					"adls_proje2e_properties_typeProperties_url": {
 						"value": "[parameters('adls_proje2e_properties_typeProperties_url')]"
 					},
-					"jsonplaceholder_properties_typeProperties_url": {
-						"value": "[parameters('jsonplaceholder_properties_typeProperties_url')]"
-					},
 					"catalogdatagovJSON_properties_typeProperties_url": {
 						"value": "[parameters('catalogdatagovJSON_properties_typeProperties_url')]"
 					},
 					"dummyjson_properties_typeProperties_url": {
 						"value": "[parameters('dummyjson_properties_typeProperties_url')]"
+					},
+					"jsonplaceholder_properties_typeProperties_url": {
+						"value": "[parameters('jsonplaceholder_properties_typeProperties_url')]"
 					},
 					"proje2e databricks LS_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('proje2e databricks LS_properties_typeProperties_existingClusterId')]"
