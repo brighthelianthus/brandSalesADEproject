@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://stadtplan.bonn.de/geojson",
+			"url": "https://data.montgomerycountymd.gov",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
