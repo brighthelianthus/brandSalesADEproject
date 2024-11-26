@@ -12,7 +12,7 @@
 			}
 		},
 		"folder": {
-			"name": "adls_brand_license_sales"
+			"name": "brandSalesProject/adls_brand_license_sales"
 		},
 		"annotations": [],
 		"type": "DelimitedText",

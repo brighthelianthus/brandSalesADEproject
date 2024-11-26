@@ -14,7 +14,7 @@
 			}
 		},
 		"folder": {
-			"name": "adls_bronze_partnersales"
+			"name": "brandSalesProject/adls_bronze_partnersales"
 		},
 		"annotations": [],
 		"type": "Parquet",

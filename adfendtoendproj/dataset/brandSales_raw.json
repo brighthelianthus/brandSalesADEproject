@@ -14,7 +14,7 @@
 			}
 		},
 		"folder": {
-			"name": "SQL_DB"
+			"name": "brandSalesProject/SQL_DB"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",

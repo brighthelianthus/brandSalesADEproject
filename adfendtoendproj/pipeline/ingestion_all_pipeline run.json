@@ -220,6 +220,9 @@
 				"type": "String"
 			}
 		},
+		"folder": {
+			"name": "brandlicensesales"
+		},
 		"annotations": [],
 		"lastPublishTime": "2024-11-12T06:35:02Z"
 	},
