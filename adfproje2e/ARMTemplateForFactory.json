@@ -2638,11 +2638,11 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2024-11-26T08:45:00",
+						"startTime": "2024-11-26T08:55:00",
 						"timeZone": "India Standard Time",
 						"schedule": {
 							"minutes": [
-								50
+								55
 							],
 							"hours": [
 								8
