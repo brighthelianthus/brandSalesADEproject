@@ -2763,7 +2763,7 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2024-11-27T22:11:00",
+						"startTime": "2024-11-26T22:20:00",
 						"timeZone": "India Standard Time",
 						"schedule": {}
 					}
