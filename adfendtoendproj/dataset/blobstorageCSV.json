@@ -1,0 +1,26 @@
+{
+	"name": "blobstorageCSV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "blobGlobal",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TriggerBasedProject"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "input",
+				"container": "global"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

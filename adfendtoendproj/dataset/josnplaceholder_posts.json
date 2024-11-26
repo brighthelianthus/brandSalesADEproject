@@ -1,0 +1,15 @@
+{
+	"name": "josnplaceholder_posts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "jsonplaceholder",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "TriggerBasedProject"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
