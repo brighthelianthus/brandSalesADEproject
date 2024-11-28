@@ -150,7 +150,8 @@ silver_partnerlicensesales.printSchema()
 gold_fact_sales1 = silver_partnerlicensesales.join(gold_dim_certification, on = ["certification_id","certification_name"], how = 'left').select("uk_id","partner_company_id","partner_id","certification_uk","industry","ise_id","ipe_id","year_name","month","license_type","sales", silver_partnerlicensesales.last_copied).join(gold_dim_license, on = ["license_type"], how= 'left').select("uk_id","partner_company_id","partner_id","certification_uk","industry","ise_id","ipe_id","year_name","month","license_id","sales","last_copied")
 
 gold_fact_sales = gold_fact_sales1.join(gold_dim_industry, on = "industry", how = 'left').select("uk_id","partner_company_id","partner_id","certification_uk","industry_id","ise_id","ipe_id","year_name","month","license_id","sales","last_copied")
-gold_fact_sales.write.format('delta').mode('overwrite').option('overwriteSchema',True).save('dbfs:/mnt/gold-partnersales/sales/delta/gold_fact_sales')
+
+gold_fact_sales.write.partitionBy("year_name","month").format('delta').mode('overwrite').save('dbfs:/mnt/gold-partnersales/sales/delta/gold_fact_sales')
 
 # COMMAND ----------
 
